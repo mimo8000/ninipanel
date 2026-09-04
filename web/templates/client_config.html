@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ panel_name }} - کانفیگ {{ client.email }}</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #0f172a; color: #e2e8f0; min-height: 100vh; }
+        .sidebar { position: fixed; right: 0; top: 0; bottom: 0; width: 260px; background: #1e293b; padding: 20px; border-left: 1px solid #334155; }
+        .sidebar .logo { text-align: center; padding: 20px 0; border-bottom: 1px solid #334155; margin-bottom: 20px; }
+        .sidebar .logo h2 { color: #a855f7; font-size: 24px; }
+        .nav-item { display: flex; align-items: center; gap: 12px; padding: 14px 16px; border-radius: 12px; color: #94a3b8; text-decoration: none; transition: 0.3s; margin-bottom: 6px; font-size: 15px; }
+        .nav-item:hover, .nav-item.active { background: rgba(124,58,237,0.2); color: #a855f7; }
+        .main { margin-right: 260px; padding: 30px; }
+        .card { background: #1e293b; border-radius: 16px; padding: 30px; border: 1px solid #334155; max-width: 700px; }
+        .info-row { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid #334155; }
+        .info-row .label { color: #94a3b8; }
+        .info-row .value { font-weight: bold; }
+        .config-box { background: #0f172a; border-radius: 12px; padding: 16px; margin-top: 20px; word-break: break-all; font-family: monospace; font-size: 13px; direction: ltr; text-align: left; border: 1px solid #334155; max-height: 200px; overflow-y: auto; }
+        .btn { padding: 12px 24px; border: none; border-radius: 12px; background: linear-gradient(135deg, #7c3aed, #a855f7); color: #fff; font-size: 14px; font-weight: bold; cursor: pointer; transition: 0.3s; text-decoration: none; display: inline-block; margin-top: 16px; }
+        .btn:hover { transform: translateY(-2px); }
+        .btn-blue { background: linear-gradient(135deg, #3b82f6, #2563eb); }
+        .badge { padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: bold; }
+        .badge-purple { background: rgba(124,58,237,0.2); color: #a855f7; }
+        .qr { text-align: center; margin: 20px 0; }
+        .qr img { border-radius: 12px; background: #fff; padding: 10px; }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <div class="logo"><h2>🛡️ NiniPanel</h2></div>
+        <a href="/" class="nav-item"><span>📊</span> داشبورد</a>
+        <a href="/clients" class="nav-item"><span>👥</span> کاربران</a>
+        <a href="/settings" class="nav-item"><span>⚙️</span> تنظیمات</a>
+        <a href="/logout" class="nav-item"><span>🚪</span> خروج</a>
+    </div>
+
+    <div class="main">
+        <h1 style="margin-bottom: 24px;">🔗 کانفیگ {{ client.email }}</h1>
+        <div class="card">
+            <div class="info-row"><span class="label">ایمیل</span><span class="value">{{ client.email }}</span></div>
+            <div class="info-row"><span class="label">UUID</span><span class="value" style="font-size:12px; font-family:monospace;">{{ client.uuid }}</span></div>
+            <div class="info-row"><span class="label">پروتکل</span><span class="value"><span class="badge badge-purple">{{ client.protocol }}</span></span></div>
+            <div class="info-row"><span class="label">ترافیک</span><span class="value">{{ client.traffic_display }} / {{ client.total_display }}</span></div>
+            <div class="info-row"><span class="label">انقضا</span><span class="value">{{ client.expiry_display }}</span></div>
+            <div class="info-row"><span class="label">لینک سابسکریپشن</span><span class="value" style="font-size:12px; font-family:monospace; word-break:break-all;">{{ request.host_url }}sub/{{ client.uuid }}</span></div>
+
+            <h3 style="margin-top: 20px;">📎 لینک اتصال</h3>
+            <div class="config-box" id="config-link">{{ link }}</div>
+            <div style="display: flex; gap: 10px; margin-top: 12px;">
+                <button class="btn" onclick="copyConfig()">📋 کپی</button>
+                <a href="/sub/{{ client.uuid }}" class="btn btn-blue">⬇️ دانلود ساب</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function copyConfig() {
+            const el = document.getElementById('config-link');
+            navigator.clipboard.writeText(el.textContent);
+            alert('کپی شد! ✅');
+        }
+    </script>
+</body>
+</html>
