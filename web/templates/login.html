@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ panel_name }} - ورود</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Tahoma, sans-serif; background: linear-gradient(135deg, #0f0c29, #302b63, #24243e); min-height: 100vh; display: flex; align-items: center; justify-content: center; color: #fff; }
+        .login-box { background: rgba(255,255,255,0.1); backdrop-filter: blur(20px); border-radius: 20px; padding: 40px; width: 400px; max-width: 90vw; border: 1px solid rgba(255,255,255,0.2); }
+        .login-box h1 { text-align: center; margin-bottom: 10px; font-size: 28px; }
+        .login-box .subtitle { text-align: center; color: rgba(255,255,255,0.6); margin-bottom: 30px; }
+        .form-group { margin-bottom: 20px; }
+        .form-group label { display: block; margin-bottom: 8px; font-size: 14px; color: rgba(255,255,255,0.8); }
+        .form-group input { width: 100%; padding: 14px 16px; border: 1px solid rgba(255,255,255,0.2); border-radius: 12px; background: rgba(255,255,255,0.05); color: #fff; font-size: 16px; outline: none; transition: 0.3s; }
+        .form-group input:focus { border-color: #7c3aed; box-shadow: 0 0 20px rgba(124,58,237,0.3); }
+        .btn { width: 100%; padding: 14px; border: none; border-radius: 12px; background: linear-gradient(135deg, #7c3aed, #a855f7); color: #fff; font-size: 18px; font-weight: bold; cursor: pointer; transition: 0.3s; }
+        .btn:hover { transform: translateY(-2px); box-shadow: 0 10px 30px rgba(124,58,237,0.4); }
+        .flash { background: rgba(239,68,68,0.2); border: 1px solid rgba(239,68,68,0.5); border-radius: 10px; padding: 12px; margin-bottom: 20px; text-align: center; font-size: 14px; }
+        .logo { text-align: center; font-size: 48px; margin-bottom: 10px; }
+    </style>
+</head>
+<body>
+    <div class="login-box">
+        <div class="logo">🛡️</div>
+        <h1>{{ panel_name }}</h1>
+        <p class="subtitle">پنل مدیریت VPN</p>
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% for cat, msg in messages %}
+                <div class="flash">{{ msg }}</div>
+            {% endfor %}
+        {% endwith %}
+        <form method="POST">
+            <div class="form-group">
+                <label>نام کاربری</label>
+                <input type="text" name="username" placeholder="admin" required>
+            </div>
+            <div class="form-group">
+                <label>رمز عبور</label>
+                <input type="password" name="password" placeholder="••••••••" required>
+            </div>
+            <button type="submit" class="btn">ورود</button>
+        </form>
+    </div>
+</body>
+</html>
