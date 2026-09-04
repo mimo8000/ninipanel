@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ panel_name }} - تنظیمات</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #0f172a; color: #e2e8f0; min-height: 100vh; }
+        .sidebar { position: fixed; right: 0; top: 0; bottom: 0; width: 260px; background: #1e293b; padding: 20px; border-left: 1px solid #334155; }
+        .sidebar .logo { text-align: center; padding: 20px 0; border-bottom: 1px solid #334155; margin-bottom: 20px; }
+        .sidebar .logo h2 { color: #a855f7; font-size: 24px; }
+        .nav-item { display: flex; align-items: center; gap: 12px; padding: 14px 16px; border-radius: 12px; color: #94a3b8; text-decoration: none; transition: 0.3s; margin-bottom: 6px; font-size: 15px; }
+        .nav-item:hover, .nav-item.active { background: rgba(124,58,237,0.2); color: #a855f7; }
+        .main { margin-right: 260px; padding: 30px; }
+        .card { background: #1e293b; border-radius: 16px; padding: 24px; border: 1px solid #334155; margin-bottom: 24px; }
+        .card h3 { margin-bottom: 16px; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { padding: 12px; text-align: right; border-bottom: 1px solid #334155; }
+        th { color: #94a3b8; font-size: 13px; }
+        .form-row { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr 1fr auto; gap: 10px; align-items: end; margin-top: 16px; }
+        .form-group { }
+        .form-group label { display: block; margin-bottom: 6px; font-size: 13px; color: #94a3b8; }
+        .form-group input, .form-group select { padding: 10px 12px; border: 1px solid #334155; border-radius: 8px; background: #0f172a; color: #e2e8f0; font-size: 14px; outline: none; width: 100%; }
+        .form-group input:focus, .form-group select:focus { border-color: #7c3aed; }
+        .btn { padding: 10px 20px; border: none; border-radius: 10px; background: linear-gradient(135deg, #7c3aed, #a855f7); color: #fff; font-size: 14px; font-weight: bold; cursor: pointer; transition: 0.3s; }
+        .btn:hover { transform: translateY(-2px); }
+        .btn-red { background: linear-gradient(135deg, #ef4444, #dc2626); }
+        .badge { padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: bold; }
+        .badge-green { background: rgba(34,197,94,0.2); color: #22c55e; }
+        .badge-purple { background: rgba(124,58,237,0.2); color: #a855f7; }
+        .flash { background: rgba(34,197,94,0.2); border: 1px solid rgba(34,197,94,0.5); border-radius: 12px; padding: 14px; margin-bottom: 20px; }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <div class="logo"><h2>🛡️ NiniPanel</h2></div>
+        <a href="/" class="nav-item"><span>📊</span> داشبورد</a>
+        <a href="/clients" class="nav-item"><span>👥</span> کاربران</a>
+        <a href="/clients/add" class="nav-item"><span>➕</span> اضافه کردن</a>
+        <a href="/settings" class="nav-item active"><span>⚙️</span> تنظیمات</a>
+        <a href="/logout" class="nav-item"><span>🚪</span> خروج</a>
+    </div>
+
+    <div class="main">
+        <h1 style="margin-bottom: 24px;">⚙️ تنظیمات</h1>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% for cat, msg in messages %}
+                <div class="flash">{{ msg }}</div>
+            {% endfor %}
+        {% endwith %}
+
+        <div class="card">
+            <h3>🔌 Inbound ها</h3>
+            <table>
+                <thead>
+                    <tr><th>تگ</th><th>پروتکل</th><th>پورت</th><th>شبکه</th><th>امنیت</th><th>عملیات</th></tr>
+                </thead>
+                <tbody>
+                    {% for ib in inbounds %}
+                    <tr>
+                        <td><span class="badge badge-purple">{{ ib.tag }}</span></td>
+                        <td>{{ ib.protocol }}</td>
+                        <td>{{ ib.port }}</td>
+                        <td>{{ ib.network }}</td>
+                        <td>{{ ib.security }}</td>
+                        <td>
+                            <form method="POST" action="/settings/inbound/{{ ib.id }}/delete" style="display:inline" onsubmit="return confirm('حذف شود؟')">
+                                <button type="submit" class="btn btn-red" style="padding:6px 12px; font-size:12px;">🗑️ حذف</button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+
+            <h3 style="margin-top: 24px;">➕ اضافه کردن Inbound</h3>
+            <form method="POST" action="/settings/inbound/add">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>تگ</label>
+                        <input type="text" name="tag" placeholder="vless-ws" required>
+                    </div>
+                    <div class="form-group">
+                        <label>پروتکل</label>
+                        <select name="protocol">
+                            <option value="vless">VLESS</option>
+                            <option value="vmess">VMess</option>
+                            <option value="trojan">Trojan</option>
+                            <option value="shadowsocks">Shadowsocks</option>
+                            <option value="hysteria2">Hysteria2</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>پورت</label>
+                        <input type="number" name="port" value="443" required>
+                    </div>
+                    <div class="form-group">
+                        <label>شبکه</label>
+                        <select name="network">
+                            <option value="tcp">TCP</option>
+                            <option value="ws">WebSocket</option>
+                            <option value="grpc">gRPC</option>
+                            <option value="h2">HTTP/2</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>امنیت</label>
+                        <select name="security">
+                            <option value="none">بدون</option>
+                            <option value="tls">TLS</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>&nbsp;</label>
+                        <button type="submit" class="btn">➕ اضافه</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</body>
+</html>
