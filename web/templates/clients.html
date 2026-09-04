@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ panel_name }} - کاربران</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #0f172a; color: #e2e8f0; min-height: 100vh; }
+        .sidebar { position: fixed; right: 0; top: 0; bottom: 0; width: 260px; background: #1e293b; padding: 20px; border-left: 1px solid #334155; z-index: 100; }
+        .sidebar .logo { text-align: center; padding: 20px 0; border-bottom: 1px solid #334155; margin-bottom: 20px; }
+        .sidebar .logo h2 { color: #a855f7; font-size: 24px; }
+        .nav-item { display: flex; align-items: center; gap: 12px; padding: 14px 16px; border-radius: 12px; color: #94a3b8; text-decoration: none; transition: 0.3s; margin-bottom: 6px; font-size: 15px; }
+        .nav-item:hover, .nav-item.active { background: rgba(124,58,237,0.2); color: #a855f7; }
+        .main { margin-right: 260px; padding: 30px; }
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
+        .btn { padding: 12px 24px; border: none; border-radius: 12px; background: linear-gradient(135deg, #7c3aed, #a855f7); color: #fff; font-size: 15px; font-weight: bold; cursor: pointer; text-decoration: none; transition: 0.3s; }
+        .btn:hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(124,58,237,0.3); }
+        .btn-sm { padding: 8px 16px; font-size: 13px; border-radius: 8px; }
+        .btn-red { background: linear-gradient(135deg, #ef4444, #dc2626); }
+        .btn-green { background: linear-gradient(135deg, #22c55e, #16a34a); }
+        .btn-blue { background: linear-gradient(135deg, #3b82f6, #2563eb); }
+        .flash { background: rgba(34,197,94,0.2); border: 1px solid rgba(34,197,94,0.5); border-radius: 12px; padding: 14px; margin-bottom: 20px; }
+        .card { background: #1e293b; border-radius: 16px; padding: 24px; border: 1px solid #334155; overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; min-width: 700px; }
+        th, td { padding: 14px 12px; text-align: right; border-bottom: 1px solid #334155; }
+        th { color: #94a3b8; font-size: 13px; font-weight: 600; }
+        tr:hover { background: rgba(255,255,255,0.03); }
+        .badge { padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: bold; }
+        .badge-green { background: rgba(34,197,94,0.2); color: #22c55e; }
+        .badge-red { background: rgba(239,68,68,0.2); color: #ef4444; }
+        .badge-yellow { background: rgba(234,179,8,0.2); color: #eab308; }
+        .badge-purple { background: rgba(124,58,237,0.2); color: #a855f7; }
+        .actions { display: flex; gap: 6px; flex-wrap: wrap; }
+        @media (max-width: 768px) { .sidebar { width: 70px; } .sidebar .logo h2, .nav-item span { display: none; } .main { margin-right: 70px; } }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <div class="logo"><h2>🛡️ NiniPanel</h2></div>
+        <a href="/" class="nav-item"><span>📊</span> داشبورد</a>
+        <a href="/clients" class="nav-item active"><span>👥</span> کاربران</a>
+        <a href="/clients/add" class="nav-item"><span>➕</span> اضافه کردن</a>
+        <a href="/settings" class="nav-item"><span>⚙️</span> تنظیمات</a>
+        <a href="/logout" class="nav-item"><span>🚪</span> خروج</a>
+    </div>
+
+    <div class="main">
+        <div class="header">
+            <h1>👥 کاربران ({{ clients|length }})</h1>
+            <a href="/clients/add" class="btn">➕ اضافه کردن کاربر</a>
+        </div>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% for cat, msg in messages %}
+                <div class="flash">{{ msg }}</div>
+            {% endfor %}
+        {% endwith %}
+
+        <div class="card">
+            <table>
+                <thead>
+                    <tr>
+                        <th>ایمیل</th>
+                        <th>پروتکل</th>
+                        <th>ترافیک</th>
+                        <th>سقف</th>
+                        <th>انقضا</th>
+                        <th>وضعیت</th>
+                        <th>عملیات</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for c in clients %}
+                    <tr>
+                        <td><strong>{{ c.email }}</strong></td>
+                        <td><span class="badge badge-purple">{{ c.protocol }}</span></td>
+                        <td>{{ c.traffic_display }}</td>
+                        <td>{{ c.total_display }}</td>
+                        <td>{{ c.expiry_display }}</td>
+                        <td>
+                            {% if c.is_expired %}
+                                <span class="badge badge-red">منقضی</span>
+                            {% elif c.enable %}
+                                <span class="badge badge-green">فعال</span>
+                            {% else %}
+                                <span class="badge badge-red">غیرفعال</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <div class="actions">
+                                <a href="/clients/{{ c.id }}/config" class="btn btn-sm btn-blue">🔗 کانفیگ</a>
+                                <form method="POST" action="/clients/{{ c.id }}/toggle" style="display:inline">
+                                    <button type="submit" class="btn btn-sm {{ 'btn-red' if c.enable else 'btn-green' }}">{{ '⏸' if c.enable else '▶️' }}</button>
+                                </form>
+                                <form method="POST" action="/clients/{{ c.id }}/reset" style="display:inline">
+                                    <button type="submit" class="btn btn-sm btn-blue">🔄 ریست</button>
+                                </form>
+                                <form method="POST" action="/clients/{{ c.id }}/delete" style="display:inline" onsubmit="return confirm('حذف شود؟')">
+                                    <button type="submit" class="btn btn-sm btn-red">🗑️</button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</body>
+</html>
